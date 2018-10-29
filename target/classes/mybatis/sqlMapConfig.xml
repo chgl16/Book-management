@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!-- alias别名 -->
+    <typeAliases>
+        <typeAlias alias="user" type="xyz.cglzwz.domain.User"/>
+        <typeAlias alias="book" type="xyz.cglzwz.domain.Book"/>
+    </typeAliases>
+
+    <!-- 已经在spring配置数据源 -->
+    <!-- 事务管理没有配置 -->
+
+    <!-- 映射文件已经在spring sql里面配置了
+    <mappers>
+        <package name="xyz.cglzwz.mapper"/>
+    </mappers>
+    -->
+</configuration>

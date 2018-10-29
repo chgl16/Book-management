@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       ">
+
+     <!-- 以下三个：注解驱动，注解配置，包扫描可以去掉
+          spring配置文件applicationContext.xml和springmvc配置文件dispatcher-servlet.xml
+          共用一个spring IoC容器，这些扫描驱动配置在任何一个文件配置即可
+          分开两个文件是让，springmvc文件更加关注web方面，spring文件是通用的 -->
+     <mvc:annotation-driven />
+     <context:annotation-config />
+     <context:component-scan base-package="xyz.cglzwz.*"/>
+
+     <!-- 加载classpath下的db.properties文件（resources目录下) -->
+     <context:property-placeholder location="classpath:jdbc.properties"/>
+
+     <!-- 配置一个数据源连接 -->
+     <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+          <property name="driverClass" value="${mysql.driver}"/>
+          <property name="url" value="${mysql.url}"/>
+          <property name="username" value="${mysql.username}"/>
+          <property name="password" value="${mysql.password}"/>
+     </bean>
+
+     <!-- 配置SqlSessionFactory, org.mybatis.spring.SqlSessionFactoryBean是Mybatis社区开发用于整合Spring的bean -->
+     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+          <!-- 加载mybatis全局配置文件sqlMapConfig.xml -->
+          <property name="configLocation" value="classpath:mybatis/sqlMapConfig.xml"/>
+          <!-- 加载数据源，引用上面配好的bean -->
+          <property name="dataSource" ref="dataSource"/>
+          <!-- 加载映射器xml文件 -->
+          <property name="mapperLocations" value="classpath:xyz/cglzwz/mapper/*.xml"/>
+     </bean>
+
+     <!-- 自动生成DAO层实现，DAO接口不加@Repository也可以 -->
+     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+          <property name="basePackage" value="xyz.cglzwz.dao"/>
+          <!-- 注意以下是value，不是ref, 因为参数类型是java.lang.String -->
+          <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+     </bean>
+
+     <!-- JDBC事务管理器 -->
+     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+          <property name="dataSource" ref="dataSource"/>
+     </bean>
+
+     <!-- 启用annotation注解方式事务管理
+     <tx:annotation-driven transaction-manager="transactionManager"/>
+     -->
+
+</beans>
